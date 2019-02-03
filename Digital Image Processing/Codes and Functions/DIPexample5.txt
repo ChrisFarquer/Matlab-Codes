@@ -1,0 +1,111 @@
+
+%I Open the file and read images (binary) 
+N=256;
+
+% change the directory for images 
+dir_name=pwd;
+cd('change to the path of the images folder');
+
+sname='image name';
+fid=fopen(sname,'rb');
+X=fread(fid,[N,N]);
+fclose(fid); clear fid;
+X=X';   % transposition 
+[N,M]=size(X);
+
+% go back to the working directory 
+cd(dir_name)
+
+
+%II Open figure and display the image
+h_fig=figure('Tag','Fig 1:',...    
+    'Name',' Digital Image Processing Example',...
+    'Position',[9 385 530 294]);  
+set(h_fig,'MenuBar','none'); %'figure'
+
+mm=max(max(X));
+colormap(gray(mm));  % gray
+h_1=subplot(1,2,1);
+image(X);
+axis off
+% imagesc(X);
+axis('image')
+h_t1=title('original image');
+set(h_t1,'FontName','Times','FontSize',10,'Color','k');
+
+% Calculate the edges of the image
+
+Y=zeros(N-1,N-1);
+Y(1:N-1,1:N-1)=X(2:N,2:N);
+X1=X(1:N-1,1:N-1);
+
+Y1=X1-Y;
+h_2=subplot(1,2,2);
+imagesc(abs(Y1));
+axis off
+% imagesc(X);
+axis('image')
+
+[N,M]=size(X);
+
+% Sobel matrix 3x3 
+Wx=[-1 -2 -1; 0 0 0; 1 2 1];
+Wy=[-1 0  1; -2 0 2; -1 0 1];
+
+X_gx=zeros(N,M);   
+X_gy=zeros(N,M);   
+% image for the gradient by x
+for m=2:N-1
+    for n=2:M-1
+        Xpart=X(n-1:n+1,m-1:m+1);
+        Ypart=Xpart.*Wx;
+        x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+        %
+        Ypart=Xpart.*Wy;
+        x1=sum(sum(Ypart));
+        X_gy(n,m)=x1;
+    end
+end
+
+h_2=subplot(1,2,2);
+image(2*abs(X_gx));
+axis off
+axis('image')
+
+h_2=subplot(1,2,1);
+image(2*abs(X_gy));
+axis off
+axis('image')
+
+h_2=subplot(1,2,2);
+image(abs(X_gy+X_gx)/2);
+axis off
+axis('image')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

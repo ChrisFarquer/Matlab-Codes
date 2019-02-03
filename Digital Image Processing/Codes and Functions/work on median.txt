@@ -1,0 +1,73 @@
+
+    clear all;
+    %I Open the file and read images (binary) 
+    N=256;
+
+    % change the directory for images 
+    dir_name=pwd;
+    cd ('change to the path of the images folder');
+    
+    M=N;
+    fid1=fopen('change to the image name','rb');    
+    X1=fread(fid1,[N,N]); fclose(fid1);  clear fid1; X1=X1';           
+    
+    cd(dir_name)
+
+    figure;     
+    colormap(gray(255));
+    subplot(1,2,1); image(X1);     
+    axis('image'); axis('off');    
+    sc1=max(max(X1)); colormap(gray(sc1));    
+    title('bridge image');
+
+    % Noisy image composition
+    N_noisy=1024;
+    [Xc,Yc]=make_noise(N,M,N_noisy);  
+    
+    T=128;
+    Y=zeros(N,M);
+    Y=X1;
+    for k=1:N_noisy
+        n=Xc(k); m=Yc(k);
+        T0=X1(n,m);
+        if T0>=T
+            Y(n,m)=0;
+        else
+            Y(n,m)=sc1;
+        end
+    end
+    
+    subplot(1,2,2); image(Y);
+    axis('image'); axis('off');    
+    title('noisy image');
+
+    % Median and mean filtrations
+    % window - square 3x3
+    X=zeros(N,M);
+    X2=X;
+    for n=2:N-1
+        n1=n-1; n2=n+1;
+        for m=2:M-1
+            block1=X1(n1:n2,m-1:m+1);
+            m1=median(median(block1));
+            m2=mean(mean(block1));
+            X(n,m)=m1;
+            X2(n,m)=m2;
+        end
+    end
+    X(1,:)=X1(1,:);    X(N,:)=X1(N,:);
+    X2(1,:)=X1(1,:);   X2(N,:)=X(N,:);
+    X(:,1)=X1(:,1);    X(:,M)=X1(:,M);
+    X2(:,1)=X1(:,1);   X2(:,M)=X1(:,M);
+    
+    figure;     
+    colormap(gray(255));
+    subplot(1,2,1); image(X);     
+    axis('image'); axis('off');    
+    title('median filtration');
+    
+    subplot(1,2,2); image(X2);     
+    axis('image'); axis('off');    
+    sc1=max(max(X1)); colormap(gray(sc1));    
+    title('mean filtration');
+        

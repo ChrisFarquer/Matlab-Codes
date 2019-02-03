@@ -1,0 +1,84 @@
+% call: show_ssignal.m
+% NxN image, N is prime
+
+
+  clear all;
+
+  fid=fopen('change to the image name','rb');           
+  f=fread(fid,[256,256]); fclose(fid); clear fid; 
+  f=f'; f(:,257)=f(:,256); f(257,:)=f(256,:);
+  N=257;              % N is a prime number         
+ 
+  % ------------------------------------
+  % Processing all generators through the 1-D DFT, 
+  % not directly by the splitting-signal	
+ 
+  A=f;   clear f;
+  % Set of generators (p,s)
+  N1=N+1;
+  Jps=ones(N1,2);
+  Jps(1:N,2)=0:N-1; Jps(N+1,1)=0;
+  
+  figure; 
+  colormap(gray);
+  subplot(2,2,1);
+  imagesc(A);
+  axis image; axis off
+ 
+  k=4;  
+  p=Jps(k,1); s=Jps(k,2);  [p s]
+  image_signal=f_pst(A,p,s);
+
+  % ------------------------------------
+
+  En=norm(image_signal)/N;
+  subplot(2,2,2);
+  plot(image_signal/N);
+  axis([0,N+1,100,140]);
+  stitle=sprintf('splitting-signal #(%g,%g)',p,s);
+  title(stitle);  
+  xlabel('time (t)');
+  ylabel('f_{p,s,t}/N');
+
+  % ------------------------------------
+  % 1-D of the splitting-signal
+
+  Fps=fft(image_signal);
+  subplot(2,2,4);
+  plot(fftshift(abs(Fps)));
+  stitle=sprintf('DFT of the splitting-signal #',k);
+  title(stitle);  
+  axis([0,N+1,0,2E4])
+
+  % ------------------------------------
+
+  % direction image by (p,s)
+  Tps=group(p,s,N);
+  
+  pp=Tps(:,1);
+  ss=Tps(:,2);
+  subplot(2,2,3);  
+  axis([0,256,0,256]);
+  axis square
+  hold on;
+  h_tt=text(pp,ss,'.');
+  
+  % INCOMPLETE 2-d DFT
+  Dps=zeros(N);
+  for k=1:N
+      p1=Tps(k,1)+1;
+      s1=Tps(k,2)+1;
+      %Dps(p1,s1)=FA(p1,s1);
+      Dps(p1,s1)=Fps(k); 
+  end
+  d_image=ifft2(Dps);
+  d_image=d_image.*(d_image>=0);
+  %d_image=round(d_image);        
+   
+  subplot(2,2,3);  hold off
+  image(d_image/4);
+  axis image;
+  stitle=sprintf('Direction image #(%g,%g)',p,s);
+  title(stitle);
+       
+ 

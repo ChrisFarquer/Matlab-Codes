@@ -1,0 +1,88 @@
+
+
+%I Open the file and read images (binary) 
+N=256;
+
+% change the directory for images 
+dir_name=pwd;
+cd('change to the path of the images folder');
+
+sname='change to the image name';
+fid=fopen(sname,'rb');
+X=fread(fid,[N,N]);
+fclose(fid); clear fid;
+X=X';   % transposition 
+[N,M]=size(X);
+
+% go back to the working directory 
+cd(dir_name)
+
+
+%II Open figure and display the image
+h_fig=figure('Tag','Fig 1:',...    
+    'Name',' Digital Image Processing Example',...
+    'Position',[9 385 530 294]);  
+set(h_fig,'MenuBar','none'); %'figure'
+
+mm=max(max(X));
+colormap(gray(mm));  % gray
+h_1=subplot(2,2,1);
+image(X);
+axis off
+% imagesc(X);
+axis('image')
+h_t1=title('original image');
+set(h_t1,'FontName','Times','FontSize',10,'Color','k');
+
+H=hist_my(X,2,2,3,'b');
+
+% Table for the GST
+T=0:255;   % diagonal
+subplot(2,2,4);
+plot(T,'--b');
+axis([0,260,0,260]);
+hold on
+
+% T1  GST
+
+a200=200;
+for a=20:a200 
+    b=a+50;
+    n_points=b-a+1;
+    T1=T;
+   % T1(a:b)=round(linspace(a,255,n_points));
+    T1(a:b)=round(linspace(0,255,n_points));
+    subplot(2,2,4);
+    h_1=plot(T1,'r');
+
+    % GST of the image 
+    X1=zeros(N,M);
+    for n=1:N
+        for m=1:M
+            r=X(n,m);
+            s=T1(r+1);
+            X1(n,m)=s;
+        end
+    end
+
+    subplot(2,2,2);
+    image(X1);
+    axis off
+    axis('image')
+    s_title=sprintf('GST in [%g,%g]',a,b);
+    h_t1=title(s_title);
+    set(h_t1,'FontName','Times','FontSize',10,'Color','k');
+
+    hist_my(X1,2,2,3,'m');
+    title('Histogram of the GST image');
+    pause(.12)
+    
+    if a<a200
+        delete(h_1);
+    end
+end
+
+
+
+
+

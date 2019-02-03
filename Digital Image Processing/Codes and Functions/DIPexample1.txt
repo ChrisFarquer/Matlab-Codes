@@ -1,0 +1,127 @@
+
+%I Open the file and read images (binary) 
+N=256;
+
+% change the directory for images 
+dir_name=pwd;
+cd('change to the path of the images folder');
+
+sname='change to the image name';
+fid=fopen(sname,'rb');
+X=fread(fid,[N,N]);
+fclose(fid); clear fid;
+X=X';   % transposition 
+[N,M]=size(X);
+
+% go back to the working directory 
+cd(dir_name)
+
+
+%II Open figure and display the image
+h_fig=figure('Tag','Fig 1:',...    
+    'Name',' Digital Image Processing Example',...
+    'Position',[9 385 530 294]);  
+set(h_fig,'MenuBar','none'); %'figure'
+
+mm=max(max(X));
+colormap(bone(mm));  % gray
+h_1=subplot(1,2,1);
+image(X);
+% imagesc(X);
+axis('square')
+h_t1=title('original image');
+set(h_t1,'FontName','Times','FontSize',10,'Color','k');
+
+
+%III Resampling by 2x2
+% compose the new image Y of size [N/2,M/2]
+k=2;
+Y=zeros(N/k,M/k);
+for n=1:N/k
+   for m=1:M/k
+      Y(n,m)=X(2*n-1,2*m-1); 
+   end
+end
+
+clear Y;
+Y=zeros(N/k,M/k);
+Y=X(1:2:N,1:2:M);
+
+%IV  Display the new image
+h_2=subplot(1,2,2);
+image(Y);
+axis('square')
+stitle=sprintf('resampled image %gx%g',k,k);
+h_t2=title(stitle);
+set(h_t2,'FontName','Times','FontSize',10,'Color','b');
+
+pause(1)
+
+X1=255*ones(N,M);
+image(X1);
+axis('square')
+X1(1:N/k,1:M/k)=Y;
+image(X1);
+axis('image')
+pause(1)
+
+subplot(1,1,1);
+image(X);
+axis image;
+
+X2=X;
+X2(1:N/k,1:M/k)=Y;
+image(X2);
+axis('image')
+pause(1)
+
+%V  NxM reconstruction of X from Y 
+% step 1
+Xnew=zeros(N,M);
+Xnew(1:2:N,1:2:M)=Y;
+image(Xnew);
+axis image;
+pause(1)
+
+% step 2
+Xnew(2:2:N,1:2:M)=Y;
+image(Xnew);
+axis image;
+pause(1)
+
+% step 3
+Xnew(1:2:N,2:2:M)=Y;
+image(Xnew);
+axis image;
+pause(1)
+
+% step 4
+Xnew(2:2:N,2:2:M)=Y;
+image(Xnew);
+axis image;
+axis off
+
+pause(1)
+
+%VI Show the original image and reconstruction 
+subplot(1,3,2)
+image(Xnew);
+axis image; axis off
+title('reconstruction')
+
+subplot(1,3,1)
+image(X);
+axis image; axis off
+title('original')
+
+Xdif=abs(X-Xnew);
+subplot(1,3,3)
+image(4*Xdif);
+axis image; axis off
+title('4*|difference|')
+
+%VII Calculate the mean-square-root error [0.0857]
+d_error= sqrt(sum(sum(Xdif.*Xdif)))/N/M
+display('   End of the code. ')
+
+        

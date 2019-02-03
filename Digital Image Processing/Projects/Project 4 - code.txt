@@ -1,0 +1,226 @@
+%Chris Farquer
+%EE 4663
+%Project 4
+
+
+%read in and display image
+Y=imread('tiger1.bmp','bmp'); 
+info=imfinfo('tiger1.bmp','bmp');
+[N M L]=size(Y);
+h_fig=figure;
+set(h_fig,'Tag','Fig1', ...
+    'Name','Project IV   Chris Farquer', ...
+    'MenuBar','none', ... 
+    'Position', [10 384 488 350]);
+subplot(1,2,1); 
+image(Y);
+axis image; 
+axis off;
+h_title=title('Original Tiger Image');
+set(h_title,'FontSize', 10, 'FontName', 'Times');
+
+ % RGB to grayscale
+ Y=double(Y);
+ R=Y(:,:,1); 
+ G=Y(:,:,2); 
+ B=Y(:,:,3);
+
+ colormap(gray(255));
+ 
+ subplot(3,2,2); 
+ image(R);
+ axis image; 
+ axis off;
+ h_title=title('Red');
+
+ subplot(3,2,4); 
+ image(G);
+ axis image; 
+ axis off;
+ h_title=title('Green');
+ 
+ subplot(3,2,6); 
+ image(B);
+ axis image; 
+ axis off;
+ h_title=title('Blue');
+pause(0.5);
+
+ %sobel gradient 
+ Gx=[-1 0 1;-2 0 2;-1 0 1];
+ Gy=[1 2 1;0 0 0;-1 -2 -1];
+
+%sobel for red
+X_gx=zeros(N,M);
+Y_gy=zeros(N,M);
+for m=2:N-1
+    for n=2:M-1
+        Xpart=R(n-1:n+1,m-1:m+1);
+	Ypart=Xpart.*Gx;
+	x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+	Ypart=Xpart.*Gx;
+	x1=sum(sum(Ypart));
+        Y_gy(n,m)=x1;
+    end
+end
+Gxr=abs(X_gx);
+X_gx=zeros(N,M);
+Y_gy=zeros(N,M);
+for m=2:N-1
+    for n=2:M-1
+        Xpart=R(n-1:n+1,m-1:m+1);
+	Ypart=Xpart.*Gy;
+	x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+	Ypart=Xpart.*Gy;
+	x1=sum(sum(Ypart));
+        Y_gy(n,m)=x1;
+    end
+end
+Gyr=abs(X_gx);
+Gkr=Gxr+Gyr;
+subplot(3,2,2); 
+image(Gkr);
+axis image; 
+axis off;
+h_title=title('Sobel Red');
+
+%sobel for green
+X_gx=zeros(N,M);
+Y_gy=zeros(N,M);
+for m=2:N-1
+    for n=2:M-1
+        Xpart=G(n-1:n+1,m-1:m+1);
+	Ypart=Xpart.*Gx;
+	x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+	Ypart=Xpart.*Gx;
+	x1=sum(sum(Ypart));
+        Y_gy(n,m)=x1;
+    end
+end
+Gxg=abs(X_gx);
+X_gx=zeros(N,M);
+Y_gy=zeros(N,M);
+for m=2:N-1
+    for n=2:M-1
+        Xpart=G(n-1:n+1,m-1:m+1);
+	Ypart=Xpart.*Gy;
+	x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+	Ypart=Xpart.*Gy;
+	x1=sum(sum(Ypart));
+        Y_gy(n,m)=x1;
+    end
+end
+Gyg=abs(X_gx);
+Gkg=Gxg+Gyg;
+subplot(3,2,4); 
+image(Gkg);
+axis image; 
+axis off;
+h_title=title('Sobel Green');
+
+%sobel for blue
+X_gx=zeros(N,M);
+Y_gy=zeros(N,M);
+for m=2:N-1
+    for n=2:M-1
+        Xpart=B(n-1:n+1,m-1:m+1);
+	Ypart=Xpart.*Gx;
+	x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+	Ypart=Xpart.*Gx;
+	x1=sum(sum(Ypart));
+        Y_gy(n,m)=x1;
+    end
+end
+Gxb=abs(X_gx);
+X_gx=zeros(N,M);
+Y_gy=zeros(N,M);
+for m=2:N-1
+    for n=2:M-1
+        Xpart=B(n-1:n+1,m-1:m+1);
+	Ypart=Xpart.*Gy;
+	x1=sum(sum(Ypart));
+        X_gx(n,m)=x1;
+	Ypart=Xpart.*Gy;
+	x1=sum(sum(Ypart));
+        Y_gy(n,m)=x1;
+    end
+end
+Gyb=abs(X_gx);
+Gkb=Gxb+Gyb;
+subplot(3,2,6); 
+image(Gkb);
+axis image; 
+axis off;
+h_title=title('Sobel Blue');
+
+%combined sobels
+ Y1=zeros(N,M,3);
+ Y1(:,:,1)=Gkr;
+ Y1(:,:,2)=Gkb;
+ Y1(:,:,3)=Gkg;
+ subplot(1,2,1); 
+ image(uint8(Y1));
+ axis image; 
+ axis off;
+ h_title=title('Sobel Combined');
+pause(1)
+
+figure;
+xx=zeros(N,M,3);
+xx(:,:,1)=(1/10*Gkr)+R;
+xx(:,:,2)=(1/10*Gkb)+B;
+xx(:,:,3)=(1/10*Gkg)+G;
+subplot(1,1,1); 
+image(uint8(xx));
+axis image; 
+axis off;
+h_title=title('Sobel+Original Image');
+pause(2);
+
+
+%robert gradient
+h3_fig=figure;
+set(h3_fig,'Tag','Fig1', ...
+    'Name','Project IV   Chris Farquer', ...
+    'MenuBar','none', ... 
+    'Position', [10 95 488 305]);
+Gxrc=[1 0;0 -1];
+Gyrc=[0 1;-1 0];
+Ir=imresize(R,[2 2]);
+Irgx=Ir.*Gxrc;
+Irgy=Ir.*Gyrc;
+Gir=abs(Irgx)+abs(Irgy);
+Grrc=imresize(Gir,[512 512]);
+Ig=imresize(G,[2 2]);
+Iggx=Ig.*Gxrc;
+Iggy=Ig.*Gyrc;
+Gig=abs(Iggx)+abs(Iggy);
+Ggrc=imresize(Gig,[512 512]);
+Ib=imresize(B,[2 2]);
+Irgx=Ir.*Gxrc;
+Irgy=Ir.*Gyrc;
+Gib=abs(Irgx)+abs(Irgy);
+Gbrc=imresize(Gib,[512 512]);
+ YR=zeros(N,M,3);
+ YR(:,:,1)=Grrc;
+ YR(:,:,2)=Gbrc;
+ YR(:,:,3)=Ggrc;
+ subplot(1,2,1); 
+ image(uint8(Y1));
+ axis image; 
+ axis off;
+ h_title=title('Robert Gradient');
+xx2=zeros(N,M,3);
+xx(:,:,1)=Grrc+R;
+xx(:,:,2)=Gbrc+B;
+xx(:,:,3)=Ggrc+G;
+subplot(1,2,2); 
+image(uint8(xx));
+axis image; 
+axis off;
+h_title=title('Robert Gradient + Tiger Image');

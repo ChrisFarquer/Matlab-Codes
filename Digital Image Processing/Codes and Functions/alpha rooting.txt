@@ -1,0 +1,34 @@
+%  2-D transform method for enhancement
+%  alpha rooting 
+
+
+
+    clear all;
+   
+    N=256; M=N;
+    fid1=fopen('change to the image name','rb');
+    fid2=fopen('change to the 2nd image name','rb');
+    
+    X1=fread(fid1,[N,N]); fclose(fid1);  clear fid1; X1=X1';           
+    X2=fread(fid2,[N,N]); fclose(fid2);  clear fid2; X2=X2';           
+      
+    a=0.75;
+    X=(a*X1+(1-a)*X2);
+   
+    L=5; 	%+5, +7, -9, 
+    K=floor(M/L);
+    EE0=eme(X,M,L);	% 4.4539
+    
+    figure;     
+    subplot(2,2,1); image(X);     
+    axis('image'); axis('off');    
+    sc1=max(max(X)); colormap(gray(sc1));    
+    title(' ');
+
+
+% ------------------ Fourier ---------------------  1 for \alpha
+    step =0.01; 
+
+    
+
+           

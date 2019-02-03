@@ -1,0 +1,47 @@
+ 
+% resampling 5x5->8x8 
+
+   X=[1   2   1   1   2  
+      2   3   2   1   2  
+      2   3   1   2   1  
+      1   2   2   1   2  
+      2   3   3   2   3];
+
+  n_factor=5/8;
+  Y=zeros(8);
+  for n=0:7
+      n1=round(n*n_factor);
+      for m=0:7
+          m1=round(m*n_factor);
+          Y(n+1,m+1)=X(n1+1,m1+1);
+          fprintf(' (%g,%g) -> (%g,%g) \n',n1,m1,n,m);
+      end
+  end
+  Y
+%      1     2     2     1     1     1     2     2
+%      2     3     3     2     1     1     2     2
+%      2     3     3     2     1     1     2     2
+%      2     3     3     1     2     2     1     1
+%      1     2     2     2     1     1     2     2
+%      1     2     2     2     1     1     2     2
+%      2     3     3     3     2     2     3     3
+%      2     3     3     3     2     2     3     3
+
+  n_factor=8/5;
+  X1=zeros(5);
+  for n=0:4
+      n1=round(n*n_factor);
+      for m=0:4
+          m1=round(m*n_factor);
+          X1(n+1,m+1)=Y(n1+1,m1+1);
+          fprintf(' (%g,%g) -> (%g,%g) \n',n1,m1,n,m);
+      end
+  end
+  error_1=sum(sum(abs(X1-X)));
+  fprintf(' Error of reconstruction:  %g \n',error_1);  
+  X1
+%      1     2     1     1     2
+%      2     3     2     1     2
+%      2     3     1     2     1
+%      1     2     2     1     2
+%      2     3     3     2     3

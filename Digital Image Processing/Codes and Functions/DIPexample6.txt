@@ -1,0 +1,89 @@
+
+clear all
+
+s_dir=pwd;
+cd ('change to the path of the images folder'); % change the directory
+
+%I  Read the image of size NxM in different formats:    
+%  Tagged Image File Format ('bmp')
+Y=imread('image name','file format'); 
+info=imfinfo('change to the image name','change to the image's file format');
+[N M L]=size(Y);
+
+cd(s_dir);
+
+%3 Display the image
+h_fig=figure;
+set(h_fig,'Tag','Fig1', ...
+    'Name','DIP Example', ...
+    'MenuBar','none', ... 
+    'Position', [10 384 488 350]);
+% set(h_fig,'MenuBar','figure');
+
+% colormap(hsv(255))
+subplot(1,2,1); image(Y);
+axis image; axis off;
+h_title=title('image: RGB model');
+set(h_title,'FontSize', 10, 'FontName', 'Times');
+
+ % RGB model  ==============================
+ Y=double(Y);
+ R=Y(:,:,1); G=Y(:,:,2); B=Y(:,:,3);
+
+ colormap(gray(255));
+ subplot(3,2,2); image(R);
+ axis image; axis off;
+ h_title=title('R');
+
+ subplot(3,2,4); image(G);
+ axis image; axis off;
+ h_title=title('G');
+ 
+ subplot(3,2,6); image(B);
+ axis image; axis off;
+ h_title=title('B');
+ 
+ 
+ Y1=zeros(N,M,3);
+ Y1(:,:,1)=R;
+ Y1(:,:,2)=B;
+ Y1(:,:,3)=G;
+ 
+ subplot(1,2,1); 
+ image(uint8(Y1));
+ axis image; axis off;
+  
+ 
+% XYZ model  ==============================
+   A=zeros(3);
+   A=[   0.49    0.31       0.2
+      0.17697  0.8124   0.01063
+            0    0.01      0.99];
+   A=A/0.17697;
+   %dd=det(A);  % 61.3659
+   Xxyz=zeros(N,M); Yxyz=Xxyz; Zxyz=Xxyz;
+   for n=1:N
+       for m=1:M
+           r1=R(n,m); r2=G(n,m); r3=B(n,m);
+           xyz1=A*[r1,r2,r3]';
+           Xxyz(n,m)=xyz1(1);
+           Yxyz(n,m)=xyz1(2);
+           Zxyz(n,m)=xyz1(3);
+       end
+   end
+   Xxyz=Xxyz/max(max(Xxyz))*255;
+   Yxyz=Yxyz/max(max(Yxyz))*255;
+   Zxyz=Zxyz/max(max(Zxyz))*255;
+   
+    %  Compose the 4-D image X from the color image Y
+    X=zeros(N,M,3);  
+    X(:,:,1)=Xxyz;  
+    X(:,:,2)=Yxyz; 
+    X(:,:,3)=Zxyz;
+    
+    Ynew=uint8(X);
+    subplot(1,2,2);
+    image(Ynew);
+    axis image; axis off;
+    h_title=title('image: XYZ model');
+    set(h_title,'FontSize', 10, 'FontName', 'Times');

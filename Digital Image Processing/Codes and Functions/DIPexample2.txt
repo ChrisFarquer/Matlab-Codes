@@ -1,0 +1,18 @@
+
+s_dir=pwd;
+cd Images;  % change the directory
+
+%I  Read the image of size NxM in different formats:    
+%  Tagged Image File Format ('tiff', 'tif')
+Y=imread('change to the image name','change to the image's file format'); 
+info=imfinfo('change to the image name','change to the image's file format'); 
+
+cd(s_dir);
+
+%3 Display the image
+h_fig=figure;
+set(h_fig,'Tag','Fig1', ...
+    'Name','Digital Image Processing Example', ...
+    'MenuBar','none', ... 
+    'Position', [10 384 488 350]);
+% set(h_fig,'MenuBar','figure');

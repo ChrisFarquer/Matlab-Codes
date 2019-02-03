@@ -1,0 +1,74 @@
+
+s_dir=pwd;
+cd Images;  % change the directory
+
+% Read the image of size NxM in different formats:    
+% Tagged Image File Format ('tiff', 'tif')
+
+Y=imread('change to the image name','change to the image's file format'); 
+info=imfinfo('change to the image name','change to the image's file format');
+
+cd(s_dir);
+
+% Display the image
+h_fig=figure;
+set(h_fig,'Tag','Fig1', ...
+    'Name','DIP Example', ...
+    'MenuBar','none', ... 
+    'Position', [10 384 488 350]);
+% set(h_fig,'MenuBar','figure');
+% set(h_fig,'MenuBar','none');
+
+X=double(Y);
+[N,M]=size(X);
+
+h_s1=subplot(2,2,1)
+colormap(gray(255));
+image(X);
+axis('image');  % axis image
+axis off;       % axis on
+
+mx_image=max(max(X));
+mn_image=min(min(X));
+colormap(gray(mx_image));
+%h_title1=title('Battle on the sea');
+h_title1=title('Pentagon image');
+set(h_title1,'FontName','Times', ...
+    'FontSize',9,'Color','k');
+h_x=xlabel('(a)'); % axis on
+h_txt1=text(128,280,'(a)');  % delete(h_txt1)
+
+H=hist_my(Y,2,1,2,'b');
+
+
+for T=10:200;
+    x=[T T]; y=[0,H(T+1)];
+    h_s3=subplot(2,1,2);
+    hold on;
+    h_line=line(x,y);
+    set(h_line,'Color','r');
+    sT=sprintf('Histogram  (Threshold is T=%3g)',T);
+    h_txt=text(T-2,y(2)+0.001,'T'); % delete(h_txt);
+    h_title=title(sT);
+    set(h_title,'FontName','Times','FontSize',9);
+    pause(0.1)
+    
+    XT=zeros(N,M);
+    %XT=(X>T).*X;
+    XT=(X>T)*mx_image;
+    h_s2=subplot(2,2,2)
+    image(XT); axis off
+    axis image
+    %title('Thresholded image')
+    s_title=sprintf('Thresholded image by %3g',T);
+    h_title=title(s_title);
+    set(h_title,'FontName','Times','FontSize',9);
+        
+    pause(.1);
+    delete(h_txt);
+    delete(h_line);
+end
+
+
+
+

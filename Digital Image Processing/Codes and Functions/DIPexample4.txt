@@ -1,0 +1,76 @@
+
+%I Open the file and read images (binary) 
+N=256;
+
+% change the directory for images 
+dir_name=pwd;
+cd('change to the path of the images folder');
+
+sname='image name';
+fid=fopen(sname,'rb');
+X=fread(fid,[N,N]);
+fclose(fid); clear fid;
+X=X';   % transposition 
+[N,M]=size(X);
+
+% go back to the working directory 
+cd(dir_name)
+
+
+%II Open figure and display the image
+h_fig=figure('Tag','Fig 1:',...    
+    'Name',' Digital Image Processing Example',...
+    'Position',[9 385 530 294]);  
+set(h_fig,'MenuBar','none'); %'figure'
+
+mm=max(max(X));
+colormap(gray(mm));  % gray
+h_1=subplot(2,2,1);
+image(X);
+axis off
+% imagesc(X);
+axis('image')
+h_t1=title('original image');
+set(h_t1,'FontName','Times','FontSize',10,'Color','k');
+
+H=hist_my(X,2,2,3,'b');
+M=length(H);
+
+% GST  which is the distribution function 
+% multiplied by M and rounded
+F=zeros(1,M);
+for r=1:M
+    F(r) = round(sum(H(1:r))*M);
+end
+subplot(2,2,4);
+plot(F,'r');
+axis([0,260,0,250]);
+title(' F(x)\timesM');
+
+% Y is the image after HE
+Y=zeros(N,N);
+for n=1:N
+    for m=1:N
+         r=X(n,m);
+         Y(n,m)=F(r+1);
+    end
+end
+
+h_2=subplot(2,2,2);
+image(Y);
+axis off
+% imagesc(X);
+axis('image')
+h_t2=title(' HE of the image');
+set(h_t2,'FontName','Times','FontSize',10,'Color','k');
+
+subplot(2,2,3); hold on
+H2=hist_my(Y,2,2,0,'b');
+plot(H2,'r');
+axis([0,260,0,0.02]);
+
+
+
+
+% print -dpsc figure1.ps; 
+
